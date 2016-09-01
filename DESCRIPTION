@@ -1,0 +1,28 @@
+Package: comuniTI
+Type: Package
+Title: Crea la lista dei Comuni ticinesi alla data desiderata (dal 1960 al 10
+    aprile 2016)
+Version: 1.3.2
+Depends:
+    R (>= 2.10)
+Imports:
+  dplyr (>= 0.4.3),
+  magrittr (>= 1.5)
+Date: 2015-11-12
+Author: Gibo
+Maintainer: Gibo <gibo@gibonet.ch>
+Description: Partendo dalla lista storicizzata dei Comuni del Ticino, messa a
+    disposizione dall'Ust, questo pacchetto permette di creare la lista dei Comuni
+    ticinesi a una determinata data e anche di collegare due liste che hanno una
+    diversa data di riferimento (questo serve ad esempio a armonizzare dei dati
+    comunali a una lista di Comuni uguale - per creare quindi una serie storica, ad
+    esempio).
+    Il pacchetto contiene tre funzioni (\code{comuni_stato} e 
+    \code{aggiungi_codici_post_mutazioni} / \code{armonizza}) e un data frame
+    con la lista storicizzata dei Comuni del Ticino (\code{data(comuniTI)}).
+License: GPL-2
+Encoding: UTF-8
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
