@@ -15,3 +15,4 @@ la vignetta inclusa nel pacchetto, digitando da R:
 ```
 vignette("comuniTI_intro", package = "comuniTI")
 ```
+
