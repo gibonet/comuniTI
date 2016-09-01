@@ -1,0 +1,106 @@
+---
+title: "Introduzione a comuniTI"
+author: "Gibo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduzione a comuniTI}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## Creazione della lista dei comuni ticinesi a una determinata data
+
+Il pacchetto permette la creazione della lista dei comuni a un determinato momento, a partire dal primo gennaio del 1960. Lo si fa con la funzione `comuni_stato`, che prende come argomenti la `listastoricizzata` dei comuni e la data di riferimento che si desidera (`data.rif`, da dare in formato "aaaa-mm-gg").
+
+Per esempio, per creare la lista dei comuni al 31.12.2000:
+
+```{r}
+# Caricamento del pacchetto comuniTI
+library(comuniTI)
+
+# Caricamento della lista storicizzata dei comuni ticinesi
+data(comuniTI)
+
+# Creazione della lista dei comuni al 31.12.2000 ("2000-12-31")
+c2000 <- comuni_stato(comuniTI, data.rif = "2000-12-31")
+str(c2000)
+```
+
+Al 31.12.2000 in Ticino c'erano `r nrow(c2000)` comuni. L'oggetto creato, `c2000`, è un data frame con `r nrow(c2000)` righe e `r ncol(c2000)` colonne.
+Ogni riga è un comune e per ognuno di questi sono disponibili `r ncol(c2000)` colonne. Solo alcune di queste sono utili/interessanti:
+
+- `municipalityId`: codice federale del comune, creato dall'Ust;
+- `municipalityLongName` e `municipalityShortName`: nome del comune (versione lunga e corta);
+- `districtHistId`: numero storicizzato del distretto a cui appartiene il comune (serve al collegamento dei comuni con i dati dei distretti - `distrettiTI`).
+
+
+## Collegamento dei dati dei comuni con i distretti
+
+Oltre alla lista storicizzata dei comuni (`comuniTI`), nel pacchetto ci sono anche dei dati con i distretti ticinesi (`distrettiTI`), che si possono caricare così:
+
+```{r}
+data(distrettiTI)
+distrettiTI
+```
+
+Ci sono gli otto distretti ticinesi che possono essere collegati con la lista dei comuni a una determinata data tramite la colonna del numero storicizzato dei distretti (`districtHistId`). Riprendendo i comuni al 31.12.2000 creati nella sezione precedente:
+
+```{r}
+dim(c2000)
+c2000 <- merge(c2000, distrettiTI, by = "districtHistId")
+dim(c2000)
+```
+
+Il nuovo data frame `c2000` ha lo stesso numero di righe (i comuni) ma tre colonne in più.
+
+```{r}
+str(c2000)
+```
+
+Le tre colonne in più sono:
+
+- `districtId`: codice federale del distretto (da 2101 a 2108);
+- `districtLongName` e `districtShortName`: nome del distretto a cui appartiene il comune (nelle versioni lunga e corta).
+
+Il collegamento dei distretti ai dati dei comuni permette di fare delle analisi aggregate a livello di distretti partendo da dei dati dei comuni. Banalmente, con i dati a disposizione, si possono per esempio contare i comuni per distretto (al 31.12.2000):
+
+```{r}
+with(c2000, table(districtShortName))
+```
+
+
+
+## Armonizzazione della lista di comuni tra una data e un'altra
+
+Mettiamo il caso di avere a disposizione dei dati a livello comunale al 31.12.2004 e degli altri al 31.12.2015, e che si vuole fare un'analisi della dinamica avvenuta nei comuni. Innanzitutto vediamo quanti comuni c'erano alle due date:
+
+```{r}
+c2004 <- comuni_stato(comuniTI, data.rif = "2004-12-31")
+c2015 <- comuni_stato(comuniTI, data.rif = "2015-12-31")
+nrow(c2004)
+nrow(c2015)
+```
+
+Al 31.12.2004 i comuni ticinesi erano `r nrow(c2004)`, mentre al 31.12.2015 `r nrow(c2015)`. Come poter paragonare i dati dei comuni alle due date? 
+
+Una possibilità è quella di aggregare i comuni al 31.12.2004, che erano `r nrow(c2004)`, facendo in modo che ne risultino `r nrow(c2015)`, come al 31.12.2015. Questo è possibile con la funzione `armonizza`, che, partendo dalla lista storicizzata e da due date di riferimento, restituisce la lista dei comuni alla data meno recente aggiungendo una colonna `bfs_new`, che indica il codice federale che quel comune avrà alla data più recente.
+
+Riprendiamo l'esempio del 31.12.2004 e del 31.12.2015:
+
+```{r}
+c2004_2015 <- armonizza(comuniTI, data1 = "2004-12-31", data2 = "2015-12-31")
+str(c2004_2015)
+```
+
+L'oggetto appena creato, `c2004_2015`, ha i `r nrow(c2004_2015)` comuni al 31.12.2004, con l'aggiunta della colonna `bfs_new`, che indica il codice federale che un comune avrà al 31.12.2015. I comuni che hanno subìto delle modifiche nel periodo tra le due date, tipo delle fusioni, avranno, nella colonna `bfs_new`, il codice federale del comune a cui apparterranno alla data più recente. Per fare un esempio, estraiamo i dati di Lugano:
+
+```{r}
+c2004_2015[c2004_2015$bfs_new == 5192, c("municipalityId", "municipalityLongName", "bfs_new")]
+```
+
+Al 31.12.2004 esistevano i comuni di Barbengo, Bogno, Cadro, Carabbia, Carona, Certara, Cimadera, Lugano, Sonvico, Valcolla e Villa Luganese (ognuno col suo codice federale `municipalityId`). Al 31.12.2015 tutti questi comuni non esistevano più e facevano parte di Lugano. Questo lo si può vedere dalla colonna `bfs_new`, che è uguale a 5192 per tutti.
+
+Da notare che la funzione `armonizza` è una nuova versione della funzione `aggiungi_codici_post_mutazioni`, che funziona allo stesso modo ma è meno "corretta", nel senso che funzionava solo in alcuni casi.
+La funzione `armonizza` ha corretto alcuni errori di `aggiungi_codici_post_mutazioni`, ma comunque per il momento funziona solo a partire dal 31.12.2004 (prima, purtroppo, no).
