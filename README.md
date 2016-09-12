@@ -5,7 +5,7 @@ comuniTI è un pacchetto R che serve a creare la lista dei comuni del Canton Tic
 Il pacchetto può essere installato con la funzione `install_github` del pacchetto devtools:
 
 ```
-devtools::install_github("gibonet/comuniTI")
+devtools::install_github("gibonet/comuniTI", build_vignettes = TRUE)
 ```
 
 
