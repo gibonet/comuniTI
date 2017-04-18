@@ -25,13 +25,12 @@ data(comuniTI)
 c12 <- comuni_stato(comuniTI, data.rif="2012-12-31")
 str(c12)
 }
-\author{
-Gibo
-}
 \references{
 \url{http://www.bfs.admin.ch/bfs/portal/it/index/infothek/nomenklaturen/blank/blank/gem_liste/02.html}
 }
 \seealso{
 \code{\link{aggiungi_codici_post_mutazioni}}
 }
-
+\author{
+Gibo
+}

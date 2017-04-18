@@ -23,4 +23,3 @@ Per ogni distretto sono disponibili le colonne seguenti:
 }
 }
 \keyword{datasets}
-
