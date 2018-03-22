@@ -10,7 +10,7 @@ Imports:
   magrittr (>= 1.5)
 Date: 2015-11-12
 Author: Gibo
-Maintainer: Gibo <gibo@gibonet.ch>
+Maintainer: Gibo <gibo.gaf@gmail.com>
 Description: Partendo dalla lista storicizzata dei Comuni del Ticino, messa a
     disposizione dall'Ust, questo pacchetto permette di creare la lista dei Comuni
     ticinesi a una determinata data e anche di collegare due liste che hanno una
