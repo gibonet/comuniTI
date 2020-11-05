@@ -1,13 +1,12 @@
 Package: comuniTI
 Type: Package
-Title: Crea la lista dei Comuni ticinesi alla data desiderata (dal 1960 al 2
-    aprile 2017)
-Version: 1.3.4
+Title: Crea la lista dei Comuni ticinesi alla data desiderata (dal 1960 al 18
+    ottobre 2020)
+Version: 1.3.5
 Depends:
     R (>= 2.10)
 Imports:
-  dplyr (>= 0.4.3),
-  magrittr (>= 1.5)
+  data.table
 Date: 2015-11-12
 Author: Gibo
 Maintainer: Gibo <gibo.gaf@gmail.com>
@@ -22,7 +21,7 @@ Description: Partendo dalla lista storicizzata dei Comuni del Ticino, messa a
     con la lista storicizzata dei Comuni del Ticino (\code{data(comuniTI)}).
 License: GPL-2
 Encoding: UTF-8
-RoxygenNote: 6.0.0
+RoxygenNote: 7.1.1
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

@@ -26,7 +26,7 @@ c12 <- comuni_stato(comuniTI, data.rif="2012-12-31")
 str(c12)
 }
 \references{
-\url{http://www.bfs.admin.ch/bfs/portal/it/index/infothek/nomenklaturen/blank/blank/gem_liste/02.html}
+\url{https://www.bfs.admin.ch/bfs/it/home/basi-statistiche/elenco-ufficiale-comuni-svizzera/elenco-storicizzato-comuni.html}
 }
 \seealso{
 \code{\link{aggiungi_codici_post_mutazioni}}

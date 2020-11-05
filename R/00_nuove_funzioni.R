@@ -1,7 +1,8 @@
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
+# #' @importFrom magrittr %>%
+# #' @export
+# magrittr::`%>%`
 
+#' @import data.table
 
 
 ###############################################################################
@@ -17,10 +18,14 @@ mutazioni_ <- function(listastoricizzata, data1, data2){
   municipalityEntryMode <- NULL
   municipalityDateOfChange <- NULL
   
-  mutazioni <- listastoricizzata %>%
-    dplyr::filter(municipalityEntryMode == 11, 
-           municipalityDateOfChange <= data2, 
-           municipalityDateOfChange >= data1)
+  listastoricizzata <- as.data.table(listastoricizzata)
+  
+  mutazioni <- listastoricizzata[
+    municipalityEntryMode == 11 &
+      municipalityDateOfChange <= data2 &
+      municipalityDateOfChange >= data1
+  ]
+  
   mutazioni
 }
 
@@ -30,20 +35,16 @@ mutazioni_ <- function(listastoricizzata, data1, data2){
 ###############################################################################
 mutazioni_assorbenti_ <- function(mutazioni){
   municipalityAbolitionDate <- NULL
+  mutazioni <- as.data.table(mutazioni)
   
-  mutazioni %>%
-    dplyr::filter(is.na(municipalityAbolitionDate)) #%>%
-  #     select(municipalityId, municipalityShortName, municipalityAdmissionNumber,
-  #            municipalityAdmissionMode, municipalityAbolitionMode)
+  mutazioni[is.na(municipalityAbolitionDate)]
 }
 
 mutazioni_assorbiti_ <- function(mutazioni){
   municipalityAbolitionDate <- NULL
+  mutazioni <- as.data.table(mutazioni)
   
-  mutazioni %>%
-    dplyr::filter(!is.na(municipalityAbolitionDate)) #%>%
-  #     select(municipalityId, municipalityShortName, municipalityAbolitionNumber,
-  #            municipalityAdmissionMode, municipalityAbolitionMode, municipalityAdmissionDate)
+  mutazioni[!is.na(municipalityAbolitionDate)]
 }
 ###############################################################################
 
@@ -81,22 +82,25 @@ armonizza <- function(listastoricizzata, data1, data2){
   m2 <- mutazioni_assorbiti_(m)
   
   # 3. 
-  tmp1 <- m2 %>% merge(m1 %>% dplyr::select(-municipalityAbolitionNumber), 
-                       by.x = "municipalityAbolitionNumber",
-                       by.y = "municipalityAdmissionNumber")
+  tmp1 <- merge(m2, m1[ , -c("municipalityAbolitionNumber")], 
+                by.x = "municipalityAbolitionNumber",
+                by.y = "municipalityAdmissionNumber",
+                sort = FALSE
+                )
+
   # municipalityId.x (codice "vecchio")
   # municipalityId.y (codice "nuovo", armonizzato)
   # municipalityLongName.x ("vecchio" nome)
   # municipalityLongName.y ("nuovo" nome)
   # sel_vars <- c("municipalityId.x", "municipalityId.y", "municipalityLongName.x", "municipalityLongName.y")
-  sel_vars <- c("municipalityId.x", "municipalityId.y")
   municipalityId.x <- NULL
   municipalityId.y <- NULL
   bfs_new <- NULL
   
-  tmp1 <- tmp1 %>% dplyr::select_(.dots = sel_vars) %>%
-    dplyr::rename(municipalityId = municipalityId.x, bfs_new = municipalityId.y)
-  
+  tmp1 <- tmp1[ , c("municipalityId.x", "municipalityId.y")]
+  setnames(tmp1, old = c("municipalityId.x", "municipalityId.y"),
+           new = c("municipalityId", "bfs_new"))
+
   # 4. Valuto se ci sono "mutazioni mancanti"
   mancanti <- setdiff(
     sort(unique(m2$municipalityAbolitionNumber)),
@@ -112,39 +116,43 @@ armonizza <- function(listastoricizzata, data1, data2){
     municipalityAbolitionMode <- NULL
     municipalityId <- NULL
     
-    mancanti_ <- m %>% dplyr::filter(municipalityAbolitionNumber %in% mancanti)
-    colonne <- c("municipalityId", "municipalityAbolitionNumber", "municipalityAbolitionMode")
-    nuovi_ <- mancanti_ %>% dplyr::select_(.dots = colonne) %>% 
-      dplyr::filter(municipalityAbolitionMode == 26) %>%
-      dplyr::rename(bfs_new = municipalityId)
-    mancanti_ <- mancanti_ %>% 
-      dplyr::left_join(nuovi_ %>% dplyr::select(-municipalityAbolitionMode), 
-                by = "municipalityAbolitionNumber") %>%
-      dplyr::select(municipalityId, bfs_new)
+    mancanti_ <- m[municipalityAbolitionNumber %in% mancanti]
+    nuovi_ <- mancanti_[
+      , c("municipalityId", "municipalityAbolitionNumber", "municipalityAbolitionMode")][
+        municipalityAbolitionMode == 26]
+    setnames(nuovi_, old = "municipalityId", new = "bfs_new")
+    mancanti_ <- merge(mancanti_, nuovi_[ , -c("municipalityAbolitionMode")],
+                       by = "municipalityAbolitionNumber", all.x = TRUE, sort = FALSE)
+    mancanti_ <- mancanti_[ , c("municipalityId", "bfs_new")]
   }
   
   if(is.null(mancanti_)){
     res <- tmp1
   }else{
-    res <- dplyr::bind_rows(tmp1, mancanti_)
+    res <- rbindlist(list(tmp1, mancanti_))
   }
   
-  res <- res %>% dplyr::distinct()
+  res <- unique(res)
+  # res <- res %>% dplyr::distinct()
   
   # Codici dei comuni che non cambiano
-  non_cambiano <- comuni1$municipalityId %>% 
-    setdiff(res$municipalityId)
-  non_cambiano_df <- dplyr::data_frame(municipalityId = non_cambiano, 
+  non_cambiano <- setdiff(comuni1$municipalityId, res$municipalityId)
+  non_cambiano_df <- data.table(municipalityId = non_cambiano, 
                                 bfs_new = non_cambiano)
   
   # Metto assieme i comuni che cambiano con quelli che non cambiano
-  res2 <- dplyr::bind_rows(res, non_cambiano_df)
+  res2 <- rbindlist(list(res, non_cambiano_df))
+  # res2 <- dplyr::bind_rows(res, non_cambiano_df)
   
   # E faccio il join con la lista dei comuni alla data1 (comuni1)
   # In questo modo questa lista avrà la colonna aggiuntiva bfs_new, con i 
   # codici che i comuni avranno alla data2
-  comuni1 <- comuni1 %>% dplyr::left_join(res2, by = "municipalityId")
-  comuni1 %>% dplyr::arrange(municipalityId)
+  comuni1 <- merge(comuni1, res2, by = "municipalityId", all.x = TRUE)
+  # comuni1 <- comuni1 %>% dplyr::left_join(res2, by = "municipalityId")
+  # comuni1 %>% dplyr::arrange(municipalityId)
+  # comuni1[order(municipalityId)]
+  setorderv(comuni1, cols = "municipalityId")
+  comuni1
 }
 
 # data1 <- "2004-12-31"

@@ -15,7 +15,7 @@
 #' 
 #' @return Un data frame con la lista (univoca) dei Comuni a una determinata data
 #' 
-#' @references \url{http://www.bfs.admin.ch/bfs/portal/it/index/infothek/nomenklaturen/blank/blank/gem_liste/02.html}
+#' @references \url{https://www.bfs.admin.ch/bfs/it/home/basi-statistiche/elenco-ufficiale-comuni-svizzera/elenco-storicizzato-comuni.html}
 #' 
 #' @author Gibo
 #' @seealso \code{\link{aggiungi_codici_post_mutazioni}}

@@ -4,7 +4,9 @@
 \name{distrettiTI}
 \alias{distrettiTI}
 \title{Lista storicizzata dei distretti ticinesi}
-\format{Un data frame con 8 righe e 4 colonne}
+\format{
+Un data frame con 8 righe e 4 colonne
+}
 \usage{
 data(distrettiTI)
 }

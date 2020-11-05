@@ -128,7 +128,7 @@ colonna `bfs_new`, il codice federale del comune a cui apparterranno alla data
 più recente. Per fare un esempio, estraiamo i dati di Lugano:
 
 ```{r}
-c2004_2015[c2004_2015$bfs_new == 5192, 
+c2004_2015[c2004_2015$bfs_new == 5192,
            c("municipalityId", "municipalityLongName", "bfs_new")]
 ```
 
