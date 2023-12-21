@@ -1,6 +1,6 @@
 # comuniTI
 
-[![R build status](https://github.com/gibonet/comuniTI/workflows/R-CMD-check/badge.svg)](https://github.com/gibonet/comuniTI/actions)
+[![R-CMD-check](https://github.com/gibonet/comuniTI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gibonet/comuniTI/actions/workflows/R-CMD-check.yaml)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/comuniTI)](http://cran.r-project.org/package=comuniTI)
 
 comuniTI è un pacchetto R che serve a creare la lista dei comuni del Canton Ticino a una determinata data e ad armonizzare le liste dei comuni a due date diverse.

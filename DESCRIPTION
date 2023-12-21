@@ -21,7 +21,7 @@ Description: Partendo dalla lista storicizzata dei Comuni del Ticino, messa a
     con la lista storicizzata dei Comuni del Ticino (\code{data(comuniTI)}).
 License: GPL-2
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
