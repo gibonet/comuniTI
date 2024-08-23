@@ -18,3 +18,14 @@ file.copy(
   copy.mode = TRUE
 )
 
+
+# git push both on gitlab and github ------------
+# From the terminal:
+# git remote add gitlab https://gitlab.com/gibonet/comuniTI.git
+# git remote -v
+# origin is github, gitlab is gitlab
+
+# To push on both remote repositories:
+# git push -u origin master    # push on gitlab
+# git push -u gitlab master    # push on github
+
