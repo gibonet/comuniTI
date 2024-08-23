@@ -3,3 +3,4 @@
 check_pack.R
 ^\.github
 ^\.github$
+00_check.R

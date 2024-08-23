@@ -1,8 +1,7 @@
 Package: comuniTI
-Type: Package
 Title: Crea la lista dei Comuni ticinesi alla data desiderata (dal 1960 al 18
     ottobre 2020)
-Version: 1.3.6
+Version: 1.3.7
 Depends:
     R (>= 2.10)
 Imports:
